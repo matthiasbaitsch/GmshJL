@@ -1,9 +1,4 @@
 using Lerche
-using Revise
-using LinearAlgebra
-
-include("mesh.jl")
-include("arrayscanner.jl")
 
 msh_grammar = """
     start: block+

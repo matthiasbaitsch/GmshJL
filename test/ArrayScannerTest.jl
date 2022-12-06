@@ -1,6 +1,5 @@
 using Test
-
-include("../src/arrayscanner.jl")
+using GmshJL: ArrayScanner, next!, nextarray!
 
 as = ArrayScanner([1, 3, 2, 9, 11, 2, 1])
 @test 1 == next!(as)

@@ -57,11 +57,11 @@ struct NodeBlockCollection
     nNodes::Int
     minNodeTag::Int
     maxNodeTag::Int
-    nodeBlocks::Vector{NodeBlock}
+    blocks::Vector{NodeBlock}
 end
 
 Base.length(ebc::NodeBlockCollection) = ebc.nBlocks
-Base.getindex(ebc::NodeBlockCollection, i) = ebc.nodeBlocks[i]
+Base.getindex(ebc::NodeBlockCollection, i) = ebc.blocks[i]
 
 struct ElementBlock
     entityDim::Int
@@ -76,15 +76,15 @@ struct ElementBlockCollection
     nElements::Int
     minElementTag::Int
     maxElementTag::Int
-    elementBlocks::Vector{ElementBlock}
+    blocks::Vector{ElementBlock}
 end
 
 Base.length(ebc::ElementBlockCollection) = ebc.nBlocks
-Base.getindex(ebc::ElementBlockCollection, i) = ebc.elementBlocks[i]
+Base.getindex(ebc::ElementBlockCollection, i) = ebc.blocks[i]
 
 function nodeTags(ebc::ElementBlockCollection, dim::Int)
     nts = []
-    for eb ∈ ebc.elementBlocks
+    for eb ∈ ebc.blocks
         if eb.entityDim == dim
             if length(nts) == 0
                 nts = eb.nodeTags
@@ -104,6 +104,6 @@ struct GmshMesh
     elementBlocks::ElementBlockCollection
 end
 
-dimension(m::GmshMesh) = maximum(n -> n.entityDim, m.elementBlocks.elementBlocks)
+dimension(m::GmshMesh) = maximum(n -> n.entityDim, m.elementBlocks.blocks)
 
 

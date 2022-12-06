@@ -3,13 +3,13 @@
 ::: mermaid
 classDiagram
     class GmshMesh {
-      version: Version
-      physicalNames: physicalName[]
+      meshFormat: MeshFormat
+      physicalNames: physicalNameCollection
       entities: EntityCollection
       nodeBlocks: NodeBlockCollection
       elementBlocks: ElementBlockCollection
     }
-    class Version {
+    class MeshFormat {
       version: Float
       fileType: Int
       dataSize: Int
@@ -48,13 +48,13 @@ classDiagram
       nNodes: Int
       minNodeTag: Int
       maxNodeTag: Int
-      nodeBlocks: NodeBlock[]
+      blocks: NodeBlock[]
     }
     class NodeBlock {       
       entityDim: Int
       entityTag: Int
       parametric: Bool
-      tags: Int[]
+      nodeTags: Int[]
       coordinates: Float[][]
     }
     class ElementBlockCollection {
@@ -62,7 +62,7 @@ classDiagram
       nElements: Int
       minElementTag: Int
       maxElementTag: Int
-      elementBlocks: ElementBlock[]
+      blocks: ElementBlock[]
     }
     class ElementBlock {
         entityDim: Int
@@ -72,7 +72,7 @@ classDiagram
         nodeTags: Int[][]
     }
 
-    GmshMesh o-- Version
+    GmshMesh o-- MeshFormat
     GmshMesh o-- PhysicalNameCollection
     PhysicalNameCollection o-- PhysicalName
     GmshMesh o-- EntityCollection
@@ -82,7 +82,7 @@ classDiagram
     ElementBlockCollection o-- ElementBlock
     EntityCollection o-- "*" Point
     EntityCollection o-- "*" Entity
-    Entity o-- "1" BoundingBox
+    Entity o-- BoundingBox
 :::
 
 

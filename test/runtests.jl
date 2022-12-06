@@ -1,6 +1,5 @@
-using GmshJL
-using Test
 
 @testset "GmshJL.jl" begin
     include("ArrayScannerTest.jl")
-end
+    include("meshtest.jl")
+end;

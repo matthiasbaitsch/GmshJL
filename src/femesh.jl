@@ -1,9 +1,8 @@
 using Makie
-using GLMakie
+using VarStructs
+using LinearAlgebra
 
-include("readmesh.jl")
-
-struct FEMeshSimple
+@var struct FEMeshSimple
     Nn::Int
     nodes::Matrix{Float64}
     Ne::Int
@@ -11,7 +10,7 @@ struct FEMeshSimple
     edgeNodeIDs::Vector{Int}
 end
 
-function plot(m::FEMeshSimple, colors = [])
+function plotmesh(m::FEMeshSimple, colors = [])
     if length(colors) > 0
         poly(m.nodes', m.elements', strokewidth=1, color=colors, axis=(aspect=DataAspect(),))
     else
@@ -24,7 +23,7 @@ function FEMeshSimple(m::GmshMesh)
     # Nodes
     Nn = m.nodeBlocks.nNodes
     nodes = zeros(Nn, 3)
-    for nb ∈ m.nodeBlocks.nodeBlocks
+    for nb ∈ m.nodeBlocks.blocks
         nodes[nb.nodeTags, :] = nb.coordinates
     end
     if norm(nodes[:, 3]) == 0
@@ -42,7 +41,7 @@ function FEMeshSimple(m::GmshMesh)
     boundaryNodeIDs = unique(reshape(nodeTags(m.elementBlocks, dim - 1), :, 1))
 
     # FE Mesh
-    return FEMeshSimple(Nn, nodes, Ne, elements, boundaryNodeIDs)
+    return FEMeshSimple(Nn = Nn, nodes = nodes, Ne = Ne, elements = elements, boundaryNodeIDs = boundaryNodeIDs)
 end
 
 function FEMesh(filename) 
@@ -51,14 +50,3 @@ function FEMesh(filename)
         return FEMeshSimple(m)
     end
 end
-
-m = FEMesh("data/heat_plate.msh")
-
-c = rand(m.Nn)
-
-print("Nn = ", m.Nn)
-plot(m, c)
-
-
-
-

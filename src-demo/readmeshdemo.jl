@@ -1,11 +1,4 @@
-include("../src/readmesh.jl")
+using GmshJL
 
 m = readmesh("data/rectangle-ng.msh")
 dump(m)
-println()
-println("nnb = ", length(m.nodeBlocks))
-dump(m.nodeBlocks)
-println()
-#println("neb = ", length(m.elementBlocks))
-#dump(m.elementBlocks)
-
