@@ -5,8 +5,9 @@ include("mesh.jl")
 include("readmesh.jl")
 include("femesh.jl")
 
-export readmesh
 export FEMesh
+export hasprop
 export plotmesh
+export readmesh
 
 end

@@ -10,11 +10,13 @@ using LinearAlgebra
     edgeNodeIDs::Vector{Int}
 end
 
+hasprop(m::FEMeshSimple, key::Symbol) = haskey(getfield(m, :fieldtable), key)
+
 function plotmesh(m::FEMeshSimple, colors = [])
     if length(colors) > 0
-        poly(m.nodes', m.elements', strokewidth=1, color=colors, axis=(aspect=DataAspect(),))
+        return poly(m.nodes', m.elements', strokewidth=1, color=colors, axis=(aspect=DataAspect(),))
     else
-        poly(m.nodes', m.elements', strokewidth=1, axis=(aspect=DataAspect(),))
+        return poly(m.nodes', m.elements', strokewidth=1, axis=(aspect=DataAspect(),))
     end
 end
 
