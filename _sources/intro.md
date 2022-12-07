@@ -1,3 +1,3 @@
 # Introduction
 
-TODO
+This is a short introduction to the `GmshJL` package.
