@@ -10,6 +10,18 @@ using Pipe: @pipe
     elements::Matrix{Int}
 end
 
+function Group(name::String, dimension::Int, nodeTagsDict::Dict)
+    elements = Matrix(reduce(vcat, nodeTagsDict[name])')
+    nodeIDs = unique(reshape(elements, :, 1))
+    return Group(
+        name=name,
+        dimension=dimension,
+        nodeIDs=nodeIDs,
+        Ne=size(elements, 2),
+        elements=elements
+    )
+end
+
 @var struct FEMeshGroups
     Nn::Int
     nodes::Matrix{Float64}
@@ -23,27 +35,26 @@ function FEMeshGroups(m::GmshMesh)
 
     # Collect node tags
     nodeTagsDict = Dict()
+    nodeTagsDict["_faces"] = []
+    nodeTagsDict["_edges"] = []
     @pipe m.elementBlocks.blocks .|>
           blockName(m, _) .|>
           (nodeTagsDict[_] = [])
     @pipe m.elementBlocks.blocks .|>
           (push!(nodeTagsDict[blockName(m, _)], _.nodeTags))
+    @pipe blocksByDimension(m.elementBlocks, 1) .|>
+          (push!(nodeTagsDict["_edges"], _.nodeTags))
+    @pipe blocksByDimension(m.elementBlocks, 2) .|>
+          (push!(nodeTagsDict["_faces"], _.nodeTags))
 
     # Create groups
     groups = Dict{String,Group}()
     for eb ∈ m.elementBlocks.blocks
         name = blockName(m, eb)
-        dimension = eb.entityDim
-        elements = Matrix(reduce(vcat, nodeTagsDict[name])')
-        nodeIDs = unique(reshape(elements, :, 1))
-        groups[name] = Group(
-            name=name,
-            dimension=dimension,
-            nodeIDs=nodeIDs,
-            Ne=size(elements, 2),
-            elements=elements
-        )
+        groups[name] = Group(name, eb.entityDim, nodeTagsDict)
     end
+    groups["_edges"] = Group("_edges", 1, nodeTagsDict)
+    groups["_faces"] = Group("_faces", 2, nodeTagsDict)
 
     # Mesh
     return FEMeshGroups(
@@ -53,21 +64,25 @@ function FEMeshGroups(m::GmshMesh)
     )
 end
 
-groupsByDimension(m::FEMeshGroups, dim::Int) = filter(g -> g.dimension == dim, collect(values(m.groups)))
+groupsByDimension(m::FEMeshGroups, dim::Int) =
+    filter(g -> g.dimension == dim && !startswith(g.name, "_"), collect(values(m.groups)))
 
-function GmshJL.plot(m::FEMeshGroups)
-    cnt = 1
+
+function plotMesh(m::FEMeshGroups)
     f = 1
     a = 1
     p = 1
-    colors = ColorSchemes.Dark2_8
 
+    # Faces
+    cnt = 1
+    colors = reverse(ColorSchemes.Pastel1_9.colors)
     for g ∈ groupsByDimension(m, 2)
         if cnt == 1
             f, a, p = poly(
                 m.nodes',
                 g.elements',
                 strokewidth=1,
+                color=colors[cnt],
                 axis=(aspect=DataAspect(),)
             )
         else
@@ -75,21 +90,47 @@ function GmshJL.plot(m::FEMeshGroups)
                 a,
                 m.nodes',
                 g.elements',
-                strokewidth=1
+                strokewidth=1,
+                color=colors[cnt]
             )
         end
         cnt += 1
     end
-    
-    cnt = 1;
+
+    # Edges
+    cnt = 1
+    colors = ColorSchemes.Set1_9.colors
     for g ∈ groupsByDimension(m, 1)
         x = m.nodes[1, g.elements]
         y = m.nodes[2, g.elements]
         x = reshape(vcat(x, fill(NaN, 1, size(x, 2))), :)
         y = reshape(vcat(y, fill(NaN, 1, size(y, 2))), :)
-        lines!(a, x, y, linewidth = 5, color = colors[cnt], overdraw = true)
+        lines!(a, x, y, linewidth=5, color=colors[cnt], overdraw=true)
         cnt += 1
     end
 
+    # Return
     return f
+end
+
+function plotMeshWithValues(m::FEMeshGroups, values; colors)
+    g = m.groups["_faces"]
+    f, a, p = poly(
+        m.nodes',
+        g.elements',
+        strokewidth=1,
+        color=values,
+        colormap=colors,
+        axis=(aspect=DataAspect(),)
+    )
+    Colorbar(f[1, 2], colormap=colors,)
+    return f
+end
+
+function GmshJL.plot(m::FEMeshGroups, values=[]; colors=ColorSchemes.devon)
+    if length(values) == 0
+        return plotMesh(m)
+    else
+        return plotMeshWithValues(m, values, colors=colors)
+    end
 end

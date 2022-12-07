@@ -1,5 +1,6 @@
 using Makie
 using VarStructs
+using ColorSchemes
 using LinearAlgebra
 
 @var struct FEMeshSimple
@@ -10,24 +11,34 @@ using LinearAlgebra
     edgeNodeIDs::Vector{Int}
 end
 
-function FEMeshSimple(m::GmshMesh) 
+function FEMeshSimple(m::GmshMesh)
     nodes = getnodes(m)
     Nn = size(nodes, 2)
     elements = nodeTags(m.elementBlocks, dimension(m))'
     Ne = size(elements, 2)
     boundaryNodeIDs = unique(reshape(nodeTags(m.elementBlocks, dimension(m) - 1), :, 1))
     return FEMeshSimple(
-        Nn = Nn, 
-        nodes = nodes, 
-        Ne = Ne, 
-        elements = elements, 
-        boundaryNodeIDs = boundaryNodeIDs
+        Nn=Nn,
+        nodes=nodes,
+        Ne=Ne,
+        elements=elements,
+        boundaryNodeIDs=boundaryNodeIDs
     )
 end
 
-function GmshJL.plot(m::FEMeshSimple, colors = [])
+function GmshJL.plot(m::FEMeshSimple, colors=[])
     if length(colors) > 0
-        return poly(m.nodes', m.elements', strokewidth=1, color=colors, axis=(aspect=DataAspect(),))
+        cm = ColorSchemes.devon.colors
+        f, a, p = poly(
+            m.nodes',
+            m.elements',
+            strokewidth=1,
+            color=colors,
+            colormap=cm,
+            axis=(aspect=DataAspect(),)
+        )
+        Colorbar(f[1, 2], colormap=cm)
+        return f
     else
         return poly(m.nodes', m.elements', strokewidth=1, axis=(aspect=DataAspect(),))
     end

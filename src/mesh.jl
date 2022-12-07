@@ -39,21 +39,31 @@ struct Entity
     boundingEntities::Vector{Int}
 end
 
+toDict(points) = reduce((d, e) -> (d[e.tag] = e; d), points, init=Dict{Int,Any}())
+
 struct EntityCollection
-    points::Vector{Point}
-    curves::Vector{Entity}
-    surfaces::Vector{Entity}
-    volumes::Vector{Entity}
-    allEntities::Dict{Int, Vector{Any}}
-    EntityCollection(points, curves, surfaces, volumes) = 
-        new(
-            points, curves, surfaces, volumes, 
-            Dict([0 => points, 1 => curves, 2 => surfaces, 3 => volumes])
+    # Note that entity numbering does not
+    # always start at 1, see e.g. complex-g1.msh
+    points::Dict{Int,Any}
+    curves::Dict{Int,Any}
+    surfaces::Dict{Int,Any}
+    volumes::Dict{Int,Any}
+    allEntities::Dict{Int,Any}
+    EntityCollection(points, curves, surfaces, volumes) = begin
+        pd = toDict(points)
+        cd = toDict(curves)
+        sd = toDict(surfaces)
+        vd = toDict(volumes)
+        return new(
+            pd, cd, sd, vd,
+            Dict([0 => pd, 1 => cd, 2 => sd, 3 => vd])
         )
+    end
 end
 Base.getindex(ec::EntityCollection, dim::Int) = ec.allEntities[dim]
 
 abstract type Block end
+abstract type BlockCollection end
 
 struct NodeBlock <: Block
     entityDim::Int
@@ -63,7 +73,7 @@ struct NodeBlock <: Block
     coordinates::Matrix{Float64}
 end
 
-struct NodeBlockCollection
+struct NodeBlockCollection <: BlockCollection
     nBlocks::Int
     nNodes::Int
     minNodeTag::Int
@@ -82,7 +92,7 @@ struct ElementBlock <: Block
     nodeTags::Matrix{Int}
 end
 
-struct ElementBlockCollection
+struct ElementBlockCollection <: BlockCollection
     nBlocks::Int
     nElements::Int
     minElementTag::Int
@@ -92,6 +102,7 @@ end
 
 Base.length(ebc::ElementBlockCollection) = ebc.nBlocks
 Base.getindex(ebc::ElementBlockCollection, i) = ebc.blocks[i]
+blocksByDimension(bc::BlockCollection, dim::Int) = filter(b -> b.entityDim == dim, bc.blocks)
 
 function nodeTags(ebc::ElementBlockCollection, dim::Int)
     nts = []
@@ -125,7 +136,7 @@ function blockName(m::GmshMesh, b::Block)
     elseif length(physicalTags) == 1
         return m.physicalNames[physicalTags[1]].name
     else
-        error("Should not happen") 
+        error("Should not happen")
     end
 end
 
