@@ -448,10 +448,10 @@ Node coordinates:
 Number of elements: 7
 Elements:
 [5 6 7 2 3 7 4; 8 8 1 6 8 8 8; 7 5 5 5 6 4 3]
-Boundary node IDs:
 </pre></div>
 </div>
-<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1, 5, 2, 6, 3, 4, 7]
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Boundary node IDs:
+[1, 5, 2, 6, 3, 4, 7]
 </pre></div>
 </div>
 </div>
@@ -548,7 +548,7 @@ Mesh has property x: false
 <img alt="_images/femeshdemo_20_0.png" src="_images/femeshdemo_20_0.png" />
 </div>
 </div>
-<p>In this example, there are three groups of 1D and two groups of 2D elements as defined in the file <span class="xref myst">advanced.geo</span>. The groups are a property of the mesh object, technically speaking, it is a Julia <code class="docutils literal notranslate"><span class="pre">Dict</span></code> which maps keys to values. Correspondingly, the defined names are accessed by</p>
+<p>In this example, there are three groups of 1D and two groups of 2D elements as defined in the file <code class="docutils literal notranslate"><span class="pre">data/advanced.geo</span></code>. The groups are a property of the mesh object, technically speaking, it is a Julia <code class="docutils literal notranslate"><span class="pre">Dict</span></code> which maps keys to values. Correspondingly, the defined names are accessed by</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">keys</span><span class="p">(</span><span class="n">m3</span><span class="o">.</span><span class="n">groups</span><span class="p">)</span><span class="w"></span>
@@ -629,7 +629,7 @@ _edges --&gt; [1 7 3 9 4 10 2 11 5 12 6 13; 7 2 9 4 10 1 11 5 12 6 13 3]
 <p>The following two examples illustrate this behaviour.</p>
 <section id="example-1">
 <h4>Example 1<a class="headerlink" href="#example-1" title="Permalink to this headline">#</a></h4>
-<p>In <span class="xref myst">complex-g1.geo</span>, there are physical names for three edges and all surfaces defined.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">data/complex-g1.geo</span></code>, there are physical names for three edges and all surfaces defined.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">m4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FEMesh</span><span class="p">(</span><span class="s">&quot;../data/complex-g1.msh&quot;</span><span class="p">)</span><span class="w"></span>
@@ -644,7 +644,7 @@ _edges --&gt; [1 7 3 9 4 10 2 11 5 12 6 13; 7 2 9 4 10 1 11 5 12 6 13 3]
 </section>
 <section id="example-2">
 <h4>Example 2<a class="headerlink" href="#example-2" title="Permalink to this headline">#</a></h4>
-<p>In <span class="xref myst">complex-g2.geo</span>, there are physical names for 6 edges but only some of the surfaces defined.</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">data/complex-g2.geo</span></code>, there are physical names for 6 edges but only some of the surfaces defined.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-julia notranslate"><div class="highlight"><pre><span></span><span class="n">m5</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FEMesh</span><span class="p">(</span><span class="s">&quot;../data/complex-g2.msh&quot;</span><span class="p">)</span><span class="w"></span>
