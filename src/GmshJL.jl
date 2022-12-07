@@ -2,12 +2,13 @@ module GmshJL
 
 include("arrayscanner.jl")
 include("mesh.jl")
-include("readmesh.jl")
 include("femesh.jl")
+include("readmesh.jl")
 
 export FEMesh
-export hasprop
-export plotmesh
+export getindex
+export haskey
+export plot
 export readmesh
 
 end

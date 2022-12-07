@@ -1,4 +1,6 @@
-# More or less verbatim translation of msh file format into structs
+"""
+ More or less verbatim translation of msh file format into structs.
+"""
 
 struct MeshFormat
     version::Float64
@@ -18,7 +20,7 @@ struct PhysicalNameCollection
 end
 
 Base.length(ebc::PhysicalNameCollection) = ebc.nNames
-Base.getindex(ebc::PhysicalNameCollection, i) = ebc.names[i]
+Base.getindex(ebc::PhysicalNameCollection, idx) = ebc.names[idx]
 
 struct BoundingBox
     bounds::Vector{Float64}
@@ -42,9 +44,18 @@ struct EntityCollection
     curves::Vector{Entity}
     surfaces::Vector{Entity}
     volumes::Vector{Entity}
+    allEntities::Dict{Int, Vector{Any}}
+    EntityCollection(points, curves, surfaces, volumes) = 
+        new(
+            points, curves, surfaces, volumes, 
+            Dict([0 => points, 1 => curves, 2 => surfaces, 3 => volumes])
+        )
 end
+Base.getindex(ec::EntityCollection, dim::Int) = ec.allEntities[dim]
 
-struct NodeBlock
+abstract type Block end
+
+struct NodeBlock <: Block
     entityDim::Int
     entityTag::Int
     parametric::Bool
@@ -63,7 +74,7 @@ end
 Base.length(ebc::NodeBlockCollection) = ebc.nBlocks
 Base.getindex(ebc::NodeBlockCollection, i) = ebc.blocks[i]
 
-struct ElementBlock
+struct ElementBlock <: Block
     entityDim::Int
     entityTag::Int
     elementType::Int
@@ -106,4 +117,27 @@ end
 
 dimension(m::GmshMesh) = maximum(n -> n.entityDim, m.elementBlocks.blocks)
 
+function blockName(m::GmshMesh, b::Block)
+    entity = m.entities[b.entityDim][b.entityTag]
+    physicalTags = entity.physicalTags
+    if length(physicalTags) == 0
+        return "_$(b.entityDim).$(b.entityTag)"
+    elseif length(physicalTags) == 1
+        return m.physicalNames[physicalTags[1]].name
+    else
+        error("Should not happen") 
+    end
+end
+
+function getnodes(m::GmshMesh)
+    Nn = m.nodeBlocks.nNodes
+    nodes = zeros(Nn, 3)
+    for nb ∈ m.nodeBlocks.blocks
+        nodes[nb.nodeTags, :] = nb.coordinates
+    end
+    if norm(nodes[:, 3]) == 0
+        nodes = nodes[:, 1:2]
+    end
+    return nodes'
+end
 

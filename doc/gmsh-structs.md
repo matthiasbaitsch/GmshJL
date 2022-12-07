@@ -31,6 +31,7 @@ classDiagram
       curves: Entity[]
       surfaces: Entity[]
       volumes: Entity[]
+      entities: Dict
     }
     class Point {
       tag: Int
