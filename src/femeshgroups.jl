@@ -113,24 +113,10 @@ function plotMesh(m::FEMeshGroups)
     return f
 end
 
-function plotMeshWithValues(m::FEMeshGroups, values; colors)
-    g = m.groups["_faces"]
-    f, a, p = poly(
-        m.nodes',
-        g.elements',
-        strokewidth=1,
-        color=values,
-        colormap=colors,
-        axis=(aspect=DataAspect(),)
-    )
-    Colorbar(f[1, 2], colormap=colors,)
-    return f
-end
-
-function GmshJL.plot(m::FEMeshGroups, values=[]; colors=ColorSchemes.devon)
+function GmshJL.plot(m::FEMeshGroups, values=[]; colors=ColorSchemes.devon, label="")
     if length(values) == 0
         return plotMesh(m)
     else
-        return plotMeshWithValues(m, values, colors=colors)
+        return plotwithvalues(m.nodes, m.groups["_faces"].elements, values, colors, label)
     end
 end

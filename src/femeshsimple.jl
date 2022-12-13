@@ -26,19 +26,9 @@ function FEMeshSimple(m::GmshMesh)
     )
 end
 
-function GmshJL.plot(m::FEMeshSimple, colors=[])
-    if length(colors) > 0
-        cm = ColorSchemes.devon.colors
-        f, a, p = poly(
-            m.nodes',
-            m.elements',
-            strokewidth=1,
-            color=colors,
-            colormap=cm,
-            axis=(aspect=DataAspect(),)
-        )
-        Colorbar(f[1, 2], colormap=cm)
-        return f
+function GmshJL.plot(m::FEMeshSimple, values=[]; colors=ColorSchemes.devon, label="")
+    if length(values) > 0
+        return plotwithvalues(m.nodes, m.elements, values, colors, label)
     else
         return poly(m.nodes', m.elements', strokewidth=1, axis=(aspect=DataAspect(),))
     end

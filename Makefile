@@ -7,6 +7,7 @@ docs:
 sourcecode:
 	mkdir -p dist/gmshjl
 	cp doc/*.ipynb src-demo/*.jl dist/gmshjl
+	cp -r data dist/gmshjl
 	cd dist && zip -r gmshjl.zip gmshjl
 
 clean:
