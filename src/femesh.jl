@@ -3,6 +3,7 @@ include("femeshgroups.jl")
 
 GmshJL.haskey(m::FEMeshSimple, key::Symbol) = haskey(getfield(m, :fieldtable), key)
 GmshJL.haskey(m::FEMeshGroups, key::Symbol) = haskey(getfield(m, :fieldtable), key)
+GmshJL.haskey(g::Group, key::Symbol) = haskey(getfield(g, :fieldtable), key)
 
 function plotwithvalues(nodes, elements, values, colors, label)
     f, _, _ = poly(

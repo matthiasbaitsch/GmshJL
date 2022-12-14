@@ -9,9 +9,14 @@ m.x = 99
 
 # With groups
 m = FEMesh("data/advanced.msh");
+
 m.x = 99
 @test haskey(m, :x)
 @test !haskey(m, :y)
+
+m.groups["s1"].x = 99
+@test haskey(m.groups["s1"], :x)
+@test !haskey(m.groups["s1"], :y)
 
 # Check edges
 m4 = FEMesh("data/complex-g1.msh")
