@@ -6,9 +6,11 @@ include("femesh.jl")
 include("readmesh.jl")
 
 export FEMesh
-export getindex
-export haskey
+export FEMeshSimple
+export FEMeshGroups
 export plot
+export haskey
+export getindex
 export readmesh
 
 end
