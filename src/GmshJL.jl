@@ -12,5 +12,7 @@ export plot
 export haskey
 export getindex
 export readmesh
+export findNodeAt
+export findNodesAt
 
 end

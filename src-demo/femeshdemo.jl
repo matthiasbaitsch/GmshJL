@@ -10,4 +10,5 @@ c = rand(m.Nn)
 println("Nn = ", m.Nn)
 println("x = ", m.x)
 
-plotmesh(m, c)
+plot(m, c)
+

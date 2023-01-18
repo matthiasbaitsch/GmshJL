@@ -1,5 +1,6 @@
 using Test
 using GmshJL
+using Revise
 
 # Without groups
 m = FEMesh("data/simple.msh");
@@ -21,3 +22,13 @@ m.groups["s1"].x = 99
 # Check edges
 m4 = FEMesh("data/complex-g1.msh")
 @test m4.groups["c1"].Ne == 40
+
+# Find one node
+for n ∈ 1:m4.Nn
+    @test findNodeAt(m4, m4.nodes[:, n]) == n
+end
+@test findNodeAt(m4, [-99; -99]) == -1
+
+# Find many nodes
+nodes = [m4.nodes[:, 5], m4.nodes[:, 2], [99; 99]]
+@test findNodesAt(m4, nodes) == [5, 2, -1];

@@ -27,4 +27,24 @@ function FEMesh(filename)
     end
 end
 
+function findNodeAt(m, x)
+    for i ∈ 1:m.Nn
+        if norm(m.nodes[:, i] - x) < 1e-10
+            return i
+        end
+    end
+    return -1
+end
+
+function findNodesAt(m, x)
+    ids = zeros(Int, length(x))
+    for i ∈ 1:length(x)
+        ids[i] = findNodeAt(m, x[i])
+    end
+    return ids
+end
+
+
+
+
 
